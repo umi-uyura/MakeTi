@@ -118,7 +118,6 @@ if [ "${android}" == "" ]; then
 fi
 TI_ANDROID_DIR="${TI_ASSETS_DIR}/android"
 TI_ANDROID_BUILD="${TI_ANDROID_DIR}/builder.py"
-ANDROID_SDK_PATH='~/Android'
 
 # Get APP parameters from current tiapp.xml
 APP_ID=`cat tiapp.xml | grep "<id>" | sed -e "s/<\/*id>//g"`
