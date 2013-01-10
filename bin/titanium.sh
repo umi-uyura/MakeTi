@@ -260,6 +260,7 @@ if [ ${APP_DEVICE} == "iphone" -o ${APP_DEVICE} == "ipad" ]; then
 							  -F notes="${RELEASE_NOTES}" | \
 							while read upload_log
 							do
+								echo ${upload_log}
 								DATE=$( /bin/date +"%Y-%m-%d" )
 							done
 
