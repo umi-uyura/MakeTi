@@ -33,22 +33,24 @@ for d in /Users/*
 do
     if [ -d "$d/${TI_DIR}" ]
     then
-        TI_DIR="$d/${TI_DIR}"
+        TI_SDK_DIR="$d/${TI_DIR}"
         echo "[DEBUG] Titanium exists..."
 
         break
-    else
-        echo "[DEBUG] Titanium not found... Testing another directory"
-
-        # not the most efficient place to have this, but it gets the job done
-		if [ -d "/$TI_DIR" ]; then
-            TI_DIR="/${TI_DIR}"
-			echo "[DEBUG] Titanium found..."
-
-			break
-		fi
     fi
 done
+
+if [ "${TI_SDK_DIR}" == "${TI_DIR}" ]; then
+    echo "[DEBUG] Titanium not found... Testing another directory"
+
+    # not the most efficient place to have this, but it gets the job done
+	if [ -d "/$TI_DIR" ]; then
+        TI_SDK_DIR="/${TI_DIR}"
+		echo "[DEBUG] Titanium found..."
+
+		break
+	fi
+fi
 
 # if no platform is set, use iphone as a default
 if [ "${APP_DEVICE}" == "" ]; then
@@ -91,7 +93,7 @@ if [ "${TI_SDK_VERSION}" == "" ]; then
 fi
 
 # Both iOS and Android SDKs are linked in this directory
-TI_ASSETS_DIR="$TI_DIR/mobilesdk/osx/$(echo $TI_SDK_VERSION)"
+TI_ASSETS_DIR="$TI_SDK_DIR/mobilesdk/osx/$(echo $TI_SDK_VERSION)"
 
 # Make sure this version exists
 if [ -d "${TI_ASSETS_DIR}" ]; then
