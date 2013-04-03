@@ -1,5 +1,19 @@
 h1. MakeTi
 
+<hr>
+
+h2. TestFlight for Android (Private Beta) support - umi-uyura added.
+
+Only TestFlight upload, not deploy for device.
+
+<pre>$ make clean && make deploy platform=android testflight=true notes="TestFlight for Android"</pre>
+
+"notes" is optional.
+
+Setting to use TestFlight, refer to "Build and deploy directly to TestFlight":#build-and-deploy-directly-to-testflight .
+
+<hr>
+
 h2. How to start the project
 
 Add the files from this repo to the root dir of your project and type one of the following in a terminal:

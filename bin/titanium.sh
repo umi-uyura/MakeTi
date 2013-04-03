@@ -334,6 +334,56 @@ elif [ ${APP_DEVICE} == "android" ]; then
 		  	echo "[ERROR] Run this command in a separate terminal session: ${ANDROID_SDK_PATH}/tools/emulator-arm -avd ${android}"
 		  	exit 0
 		fi
+    elif [ $TESTFLIGHT_ENABLED ]; then
+        bash -c "'${TI_ANDROID_BUILD}' build '${APP_NAME}'  '${ANDROID_SDK_PATH}' '${PROJECT_ROOT}/' ${APP_ID} ${android}" | \
+            while read build_log
+        do
+            echo "${build_log}" \
+                | pretty_print
+
+            if [[ "$build_log" == *zipalign* ]]; then
+                sleep 2
+
+                echo "APK is now located in: ${PROJECT_ROOT}/build/android/bin/app.apk"
+				API_TOKEN=`cat tiapp.xml | grep "<tf_api>" | sed -e "s/<\/*tf_api>//g"`
+				API_TOKEN=$(echo ${API_TOKEN//    /})
+				TEAM_TOKEN=`cat tiapp.xml | grep "<tf_token>" | sed -e "s/<\/*tf_token>//g"`
+				TEAM_TOKEN=$(echo ${TEAM_TOKEN//    /})
+
+				if [ "${API_TOKEN}" == '' -o "${TEAM_TOKEN}" == '' ]; then
+					echo "[ERROR] Testflight API key (tf_api) and Testflight team token (tf_token) must be defined in your tiapp.xml to upload with testflight"\
+								| pretty_print
+
+					exit 0
+				fi
+
+                echo "[INFO] Preping to upload to TestFlight..."\
+                        | pretty_print
+
+                APP="${PROJECT_ROOT}/build/android/bin/app.apk"
+
+                echo "[INFO] Uploading .apk to TestFlight..." \
+                    | pretty_print
+
+                if [ "${RELEASE_NOTES}" == '' ]; then
+                    RELEASE_NOTES='Build uploaded automatically from MakeTi.'
+                fi
+
+				/usr/bin/curl "http://testflightapp.com/api/builds.json" \
+					-F file=@"$(echo $APP)" \
+					-F api_token="${API_TOKEN}" \
+					-F notify="True" \
+					-F replace="True" \
+					-F team_token="${TEAM_TOKEN}" \
+					-F distribution_lists="$(echo `cat tiapp.xml | grep "<tf_dist>" | sed -e "s/<\/*tf_dist>//g"`)" \
+					-F notes="${RELEASE_NOTES}" | \
+					while read upload_log
+				do
+					echo ${upload_log}
+					DATE=$( /bin/date +"%Y-%m-%d" )
+				done
+            fi
+        done
 	else
 		list_called="false"
 		device_found="false"
